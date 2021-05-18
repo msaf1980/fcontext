@@ -25,15 +25,15 @@ task:
           - image: ubuntu:18.04
     - name: Build on CentOS (gcc, release)
       install_dependencies_script:
-        - yum install -y make gcc gcc-c++
-      script: /ci/run_tests.sh -DCMAKE_BUILD_TYPE=Release
+        - yum install -y cmake make gcc gcc-c++
+      script: ./ci/run_tests.sh -DCMAKE_BUILD_TYPE=Release
       container:
         matrix:
           - image: centos:7
           - image: centos:8
     - name: Build on CentOS (gcc, debug)
       install_dependencies_script:
-        - yum install -y make gcc gcc-c++
+        - yum install -y cmake make gcc gcc-c++
       script: ./ci/run_tests.sh -DCMAKE_BUILD_TYPE=Debug
       container:
         matrix:
