@@ -39,7 +39,6 @@ void* fcontext_stack_malloc(stack_context_t* sc, size_t size);
 
 #define fcontext_stack_free(sc)    \
     do {                           \
-        assert(sc != NULL);        \
         if ((sc)->free) {          \
             (sc)->free((sc));      \
         }                          \
