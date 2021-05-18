@@ -49,11 +49,37 @@ else()
     enable_language(ASM)
 endif()
 
+function(append_flag FLAGS_VAR FLAG_VAR CHECK_VAR)
+    string(FIND FLAGS_VAR "${CHECK_VAR}" res)
+    if(res EQUAL -1)
+        set(${FLAGS_VAR} "${${FLAGS_VAR}} ${FLAG_VAR}" PARENT_SCOPE)
+    endif()
+endfunction()
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W -Wall -Wextra -Werror")
+
+string(TOLOWER "${CMAKE_BUILD_TYPE}" MODE)
+if (MODE STREQUAL "debug")
+    string(TOUPPER "${CMAKE_PROJECT_NAME}" PNAME)
+    append_flag(CMAKE_C_FLAGS "-g" "-g")
+    append_flag(CMAKE_C_FLAGS "-O0" "-O")
+    add_definitions("-DDEBUG")
+    add_definitions("-D${PNAME}_DEBUG")
+    message("Build mode: debug")
+elseif (MODE STREQUAL "release")
+    message("Build mode: production")
+endif ()
+
+include_directories(include)
+
 set(FCTX_SOURCE_SUFFIX ${FCTX_ARCH}_${FCTX_PLATFORM}_${FCTX_COFF}_${FCTX_ASM_COMPILER}${FCTX_ASM_SOURCE_EXTENSION})
-set(SRC asm/make_${FCTX_SOURCE_SUFFIX} asm/jump_${FCTX_SOURCE_SUFFIX} asm/ontop_${FCTX_SOURCE_SUFFIX})
+set(SRC src/asm/make_${FCTX_SOURCE_SUFFIX} src/asm/jump_${FCTX_SOURCE_SUFFIX} src/asm/ontop_${FCTX_SOURCE_SUFFIX} src/falloc.c)
 
-add_definitions(-DBOOST_CONTEXT_EXPORT)
-add_library(fcontext fcontext.h ${SRC})
+add_library(fcontext ${SRC})
 
-add_executable(fcontext_test test.c)
-target_link_libraries(fcontext_test PRIVATE fcontext)
+add_executable(test_fcontext test/fcontext_test.c)
+target_link_libraries(test_fcontext PRIVATE fcontext)
+
+set_target_properties(fcontext test_fcontext PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
