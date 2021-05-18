@@ -103,13 +103,31 @@ set(FCTX_SOURCE_SUFFIX ${FCTX_ARCH}_${FCTX_PLATFORM}_${FCTX_COFF}_${FCTX_ASM_COM
 set(SRC src/asm/make_${FCTX_SOURCE_SUFFIX} src/asm/jump_${FCTX_SOURCE_SUFFIX} src/asm/ontop_${FCTX_SOURCE_SUFFIX} src/falloc.c)
 
 add_library(fcontext ${SRC})
+set_target_properties(fcontext PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+)
+
 
 enable_testing()
 
-add_executable(test_fcontext test/fcontext_test.c)
-add_test(NAME test_fcontext COMMAND test_fcontext)
-target_link_libraries(test_fcontext PRIVATE fcontext)
+set (tests "fcontext")
+set (benchs "fcontext")
 
-set_target_properties(fcontext test_fcontext PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+foreach(test ${tests})
+    add_executable(test_${test} test/${test}_test.c)
+    add_test(NAME test_${test} COMMAND test_${test})
+    target_link_libraries(test_${test} PRIVATE fcontext)
+    set_target_properties(test_${test} PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+    )
+endforeach()
+
+foreach(bench ${benchs})
+    add_executable(bench_${bench} test/${bench}_bench.c)
+    target_link_libraries(bench_${bench} PRIVATE fcontext)
+    set_target_properties(bench_${bench} PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+    )
+endforeach()
