@@ -8,21 +8,38 @@ project(fcontext)
 # FCTX_ASM_COMPILER: gas masm armasm
 # FCTX_ASM_SOURCE_EXTENSION: .S .asm
 
-if (${CMAKE_SYSTEM_PROCESSOR} MATCHES "AMD64" 
-    OR ${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64"
-    OR ${CMAKE_SYSTEM_PROCESSOR} MATCHES "i386"
-    OR ${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86")
+string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" SYSTEM_PROCESSOR)
+if (${SYSTEM_PROCESSOR} MATCHES "amd64"
+    OR ${SYSTEM_PROCESSOR} MATCHES "x86_64"
+    OR ${SYSTEM_PROCESSOR} MATCHES "i386"
+    OR ${SYSTEM_PROCESSOR} MATCHES "x86")
     if (${CMAKE_SIZEOF_VOID_P} EQUAL 8)
         set(FCTX_ARCH x86_64)
     else()
         set(FCTX_ARCH i386)
     endif()
-elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm")
+elseif(${CSYSTEM_PROCESSOR} MATCHES "arm")
     if (CMAKE_CL_64)
         set(FCTX_ARCH arm64)
     else()
         set(FCTX_ARCH arm)
     endif()
+elseif(${CSYSTEM_PROCESSOR} MATCHES "mips") # Untested
+    if (CMAKE_CL_64)
+        set(FCTX_ARCH mips64)
+    else()
+        set(FCTX_ARCH mips)
+    endif()
+elseif(${CSYSTEM_PROCESSOR} MATCHES "(ppc)|(power)") # Untested
+    if (CMAKE_CL_64)
+        set(FCTX_ARCH ppc64)
+    else()
+        set(FCTX_ARCH ppc32)
+    endif()
+elseif(${CSYSTEM_PROCESSOR} MATCHES "riscv64") # Untested    
+    set(FCTX_ARCH riscv64)
+elseif(${CSYSTEM_PROCESSOR} MATCHES "s390x") # Untested    
+    set(FCTX_ARCH s390x)
 else()
     message(FATAL_ERROR "arch ${CMAKE_SYSTEM_PROCESSOR} not supported")
 endif()
@@ -41,6 +58,16 @@ if (WIN32)
         enable_language(ASM_MASM)
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SAFESEH:NO")
     endif()
+elseif (APPLE)
+    if (${FCTX_ARCH} MATCHES "arm")
+        set(FCTX_PLATFORM aapcs)
+    else ()
+        set(FCTX_PLATFORM sysv)
+    endif ()
+    set(FCTX_COFF macho)
+    set(FCTX_ASM_SOURCE_EXTENSION .S)
+    set(FCTX_ASM_COMPILER gas)
+    enable_language(ASM)
 else()
     set(FCTX_PLATFORM sysv)
     set(FCTX_COFF elf)
