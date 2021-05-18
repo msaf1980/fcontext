@@ -13,8 +13,8 @@
  *   cc -I../include -L../build/lib fibonacci.c -lsc -o fibonacci
 */
 
-#include <fcontext.h>
-#include <falloc.h>
+#include <fcontext/fcontext.h>
+#include <fcontext/falloc.h>
 
 #include <stdlib.h> /* abort */
 #include <stdio.h> /* printf */
