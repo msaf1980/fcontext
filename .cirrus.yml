@@ -29,29 +29,35 @@ task:
       script: ./ci/run_tests.sh -DCMAKE_BUILD_TYPE=Release
       container:
         matrix:
-          - image: centos:7
           - image: centos:8
+          - image: centos:7
     - name: Build on CentOS (gcc, debug)
       install_dependencies_script:
         - yum install -y cmake make gcc gcc-c++
       script: ./ci/run_tests.sh -DCMAKE_BUILD_TYPE=Debug
       container:
         matrix:
-          - image: centos:7
           - image: centos:8
+          - image: centos:7
     - name: Build on FreeBSD (debug)
       install_dependencies_script:
-        - pkg install -y cmake gmake
-      script: ./ci/run_tests.sh -DCMAKE_BUILD_TYPE=Debug
+        - pkg install -y cmake gmake bash
+      script: bash ./ci/run_tests.sh -DCMAKE_BUILD_TYPE=Debug
       freebsd_instance:
         matrix:
           #- image: freebsd-12-1-release-amd64
           - image: freebsd-11-4-release-amd64
     - name: Build on FreeBSD (release)
       install_dependencies_script:
-        - pkg install -y cmake gmake
-      script: ./ci/run_tests.sh -DCMAKE_BUILD_TYPE=Release
+        - pkg install -y cmake gmake bash
+      script: bash ./ci/run_tests.sh -DCMAKE_BUILD_TYPE=Release
       freebsd_instance:
         matrix:
           #- image: freebsd-12-1-release-amd64
           - image: freebsd-11-4-release-amd64
+    - name: Build on MacOS Catalina (release)
+      install_dependencies_script:
+        -  brew install cmake
+      script: ./ci/run_tests.sh -DCMAKE_BUILD_TYPE=Release
+      macos_instance:
+          image: catalina-xcode-12.2
