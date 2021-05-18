@@ -61,3 +61,9 @@ task:
       script: ./ci/run_tests.sh -DCMAKE_BUILD_TYPE=Release
       macos_instance:
           image: catalina-xcode-12.2
+    - name: Build on MacOS Big Sur (release)
+      install_dependencies_script:
+        -  brew install cmake
+      script: ./ci/run_tests.sh -DCMAKE_BUILD_TYPE=Release
+      macos_instance:
+          image: big-sur-xcode-12.5
