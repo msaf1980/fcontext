@@ -77,7 +77,10 @@ set(SRC src/asm/make_${FCTX_SOURCE_SUFFIX} src/asm/jump_${FCTX_SOURCE_SUFFIX} sr
 
 add_library(fcontext ${SRC})
 
+enable_testing()
+
 add_executable(test_fcontext test/fcontext_test.c)
+add_test(NAME test_fcontext COMMAND test_fcontext)
 target_link_libraries(test_fcontext PRIVATE fcontext)
 
 set_target_properties(fcontext test_fcontext PROPERTIES
